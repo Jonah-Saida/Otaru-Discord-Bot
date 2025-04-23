@@ -23,7 +23,6 @@ module.exports = async function startRobloxAutoTracker(client) {
     }
   }
 
-  // Run every 5 minutes
-  setInterval(checkMemberCount, 120000);
+  setInterval(checkMemberCount, 300000);
   await checkMemberCount();
 };

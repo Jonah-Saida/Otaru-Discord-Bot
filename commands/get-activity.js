@@ -1,10 +1,37 @@
 const { SlashCommandBuilder } = require('discord.js');
 const noblox = require('noblox.js');
-require('dotenv').config(); // Make sure this line is at the top if not already
+require('dotenv').config();
+const admin = require('firebase-admin');
+const firebaseKey = require('../firebase-key.json');
 
 const errormessage = process.env.ERROR;
 const HR = process.env.HR;
 const SR = process.env.SR;
+
+
+
+const db = admin.database();
+const activityRef = db.ref("activity");
+
+async function getActivity(interaction, robloxID) {
+  const userRef = activityRef.child(robloxID.toString());
+  const snapshot = await userRef.once("value");
+
+  if (snapshot.exists()) {
+    const data = snapshot.val();
+    const minuteData = data.minutes || 0;
+    const username = await noblox.getUsernameFromId(robloxID);
+
+    return interaction.reply(
+      `**${username}** (<https://www.roblox.com/users/${robloxID}/profile>) currently has **${minuteData}** minutes.`
+    );
+  } else {
+    const username = await noblox.getUsernameFromId(robloxID);
+    return interaction.reply(
+      `No activity data found for **${username}** (<https://www.roblox.com/users/${robloxID}/profile>).`
+    );
+  }
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,6 +42,7 @@ module.exports = {
         .setDescription('Roblox username only')
         .setRequired(true)
     ),
+
   async execute(interaction) {
     const robloxUser = interaction.options.getString('username');
 
@@ -24,14 +52,20 @@ module.exports = {
 
     try {
       const robloxID = await noblox.getIdFromUsername(robloxUser);
-      const rankID = await noblox.getRankInGroup(process.env.GROUP, robloxID)
+      const rankID = await noblox.getRankInGroup(parseInt(process.env.GROUP), robloxID);
+
       if (rankID <= 242) {
-        return interaction.reply({content: `An error has occurred: **${robloxUser}** holds the insufficient rank to be activity tracked.`})
+        return interaction.reply({
+          content: `**${robloxUser}** holds an insufficient rank to be activity tracked.`,
+          ephemeral: true
+        });
       }
-      await interaction.reply(`**${robloxUser}** (https://www.roblox.com/users/${robloxID}/profile) currently has **0** minutes.`);
+
+      await getActivity(interaction, robloxID);
+
     } catch (error) {
-      console.error("Error getting Roblox ID:", error);
-      await interaction.reply("Invalid Roblox username or user not found.");
+      console.error("Error getting Roblox ID or activity data:", error);
+      await interaction.reply("Invalid Roblox username or an error occurred.");
     }
   }
 };

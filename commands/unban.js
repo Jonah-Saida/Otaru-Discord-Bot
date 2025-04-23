@@ -9,27 +9,18 @@ const log = process.env.LOG;
 
 const firebaseKey = require('../firebase-key.json');
 
-admin.initializeApp({
-  credential: admin.credential.cert(firebaseKey),
-  databaseURL: "https://otaru-de4a0-default-rtdb.firebaseio.com" // ✅ root only
-});
 
 const db = admin.database();
 const blacklistRef = db.ref("blacklists");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('ban')
-    .setDescription('Ban someone permanently from the game')
+    .setName('unban')
+    .setDescription('Unban someone permanently from the game')
     .addStringOption(option =>
       option.setName('username')
         .setDescription('Roblox username only')
         .setRequired(true)
-    )
-    .addStringOption(option =>
-      option.setName('reason')
-        .setDescription('Reason for the ban')
-        .setRequired(false)
     ),
 
   async execute(interaction) {
@@ -43,7 +34,7 @@ module.exports = {
       reason = 'No reason provided.';
     }
 
-    if (!interaction.member.roles.cache.has(HR) && !interaction.member.roles.cache.has(SR)) {
+    if (!interaction.member.roles.cache.has(SR)) {
       return interaction.reply({ content: errormessage, ephemeral: true });
     }
 
@@ -54,22 +45,22 @@ module.exports = {
       const userRef = blacklistRef.child(robloxID);
       const snapshot = await userRef.once("value");
       
-      await userRef.set({
-        username: robloxUser,
-        reason: reason,
-        active: true,
-        author: authorID,
-      });
-
+      if (snapshot.exists()) {
+        await userRef.remove();
+      } else {
+        interaction.reply(`**${robloxUser}** (<https://www.roblox.com/users/${robloxID}/profile>) isn't banned.`)
+        return
+      }
+    
 
       await interaction.reply(
-        `**${robloxUser}** (<https://www.roblox.com/users/${robloxID}/profile>) has been permanently banned from Otaru.\n> **Reason**: ${reason}`
+        `**${robloxUser}** (<https://www.roblox.com/users/${robloxID}/profile>) has been unbanned banned from Otaru`
       );
 
       const channel = await interaction.client.channels.fetch(log);
       if (channel) {
         await channel.send(
-          `**${robloxUser}** has been permanently banned from Otaru.\n\`\`\`\nUsername: ${robloxUser} (${robloxID})\nReason: ${reason}\nBanned by: ${authorID}\n\`\`\``
+          `**${robloxUser}** has been unbanned banned from Otaru.\n\`\`\`\nUsername: ${robloxUser} (${robloxID})\nUnbanned by: ${authorID}\n\`\`\``
         );
       }
     } catch (error) {
