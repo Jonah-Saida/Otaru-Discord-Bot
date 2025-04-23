@@ -53,7 +53,10 @@ module.exports = {
 
       const userRef = blacklistRef.child(robloxID);
       const snapshot = await userRef.once("value");
-      
+     
+      if (snapshot.exists()) {
+        return interaction.reply(`**${robloxUser}** (${robloxID}) is already banned`)
+      }
       
       await userRef.set({
         username: robloxUser,
