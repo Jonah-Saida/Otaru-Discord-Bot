@@ -54,10 +54,11 @@ module.exports = {
       const userRef = blacklistRef.child(robloxID);
       const snapshot = await userRef.once("value");
       
+      
       await userRef.set({
         username: robloxUser,
         reason: reason,
-        active: true,
+        appealable: true,
         author: authorID,
       });
 

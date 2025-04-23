@@ -45,9 +45,10 @@ module.exports = {
 
       const userRef = blacklistRef.child(robloxID);
       const snapshot = await userRef.once("value");
+     const blacklistData = snapshot.val()
 
-      if (robloxID == 326671671) {
-        return interaction.reply(`This user cannot be unbanned banned`)
+      if (blacklistData && blacklistData.appealable == false) {
+        return interaction.reply(`This user cannot be unbanned. Ban has been marked unappealable`)
       }
       
       if (snapshot.exists()) {
