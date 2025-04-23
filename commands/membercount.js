@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const noblox = require('noblox.js');
 const group = parseInt(process.env.GROUP);
-require('dotenv').config(); // If you're using .env to store your group ID
+require('dotenv').config();
 
 
 module.exports = {
