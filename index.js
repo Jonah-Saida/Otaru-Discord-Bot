@@ -5,6 +5,8 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
 const noblox = require('noblox.js');
 const { start } = require('repl');
+const trackGroup = require('./autogroup');
+
 
 async function startApp () {
     const currentUser = await noblox.setCookie(process.env.COOKIE);
@@ -28,7 +30,9 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
+    trackGroup(client);
   console.log(`✅ Logged in as ${client.user.tag}!`);
+  
 });
 
 
