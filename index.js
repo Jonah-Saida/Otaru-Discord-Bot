@@ -3,6 +3,15 @@ const fs = require('fs');
 const path = require('path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 require('dotenv').config();
+const noblox = require('noblox.js');
+const { start } = require('repl');
+
+async function startApp () {
+    const currentUser = await noblox.setCookie(process.env.COOKIE);
+    console.log(`Logged in as ${currentUser.UserName} [${currentUser.UserID}]`)
+}
+
+startApp()
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -21,6 +30,7 @@ for (const file of commandFiles) {
 client.once('ready', () => {
   console.log(`✅ Logged in as ${client.user.tag}!`);
 });
+
 
 client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
