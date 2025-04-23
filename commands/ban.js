@@ -39,7 +39,7 @@ module.exports = {
       const robloxID = await noblox.getIdFromUsername(robloxUser);
 
       await interaction.reply(
-        `**${robloxUser}** (https://www.roblox.com/users/${robloxID}/profile) has been permanently banned from Otaru.\n> **Reason**: ${reason}`
+        `**${robloxUser}** (<https://www.roblox.com/users/${robloxID}/profile>) has been permanently banned from Otaru.\n> **Reason**: ${reason}`
       );
 
       const channel = await interaction.client.channels.fetch(log);
