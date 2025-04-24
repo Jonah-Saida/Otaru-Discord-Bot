@@ -8,6 +8,8 @@ const firebaseKey = require('../firebase-key.json');
 const db = admin.database();
 const inactiveRef = db.ref("inactiveUsers");
 const log = process.env.LOG; 
+const HR = process.env.HR;
+const SR = process.env.SR;
 
 async function getRobloxID(userID) {
   try {
@@ -39,6 +41,11 @@ module.exports = {
     ),
 
   async execute(interaction) {
+
+    if (!interaction.member.roles.cache.has(HR) && !interaction.member.roles.cache.has(SR)) {
+        return interaction.reply({ content: errormessage, ephemeral: true });
+      }
+
     try {
       const discordUser = interaction.options.getUser('user');
       const until = interaction.options.getString('until');

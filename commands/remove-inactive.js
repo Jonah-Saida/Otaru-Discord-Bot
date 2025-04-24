@@ -19,6 +19,11 @@ module.exports = {
     ),
 
   async execute(interaction) {
+
+    if (!interaction.member.roles.cache.has(HR) && !interaction.member.roles.cache.has(SR)) {
+      return interaction.reply({ content: errormessage, ephemeral: true });
+    }
+
     try {
       const discordUser = interaction.options.getUser('user');
       const userID = discordUser.id;
