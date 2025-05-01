@@ -8,16 +8,14 @@ const SR = process.env.SR;
 const log = process.env.LOG;
 
 
-const firebaseKey = require('../firebase-key.json');
-
-
+const firebaseKey = JSON.parse(process.env.FIREBASE);
 const db = admin.database();
 const blacklistRef = db.ref("blacklists");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('unban')
-    .setDescription('Unban someone permanently from the game')
+    .setDescription('Unban someone permanently from the game.')
     .addStringOption(option =>
       option.setName('username')
         .setDescription('Roblox username only')

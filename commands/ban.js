@@ -7,13 +7,13 @@ const HR = process.env.HR;
 const SR = process.env.SR;
 const log = process.env.LOG;
 
-const firebaseKey = require('../firebase-key.json');
+const firebaseKey = JSON.parse(process.env.FIREBASE);
+
 
 admin.initializeApp({
   credential: admin.credential.cert(firebaseKey),
   databaseURL: "https://otaru-de4a0-default-rtdb.firebaseio.com" // ✅ root only
 });
-
 const db = admin.database();
 const blacklistRef = db.ref("blacklists");
 
